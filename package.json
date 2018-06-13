@@ -1,0 +1,50 @@
+{
+  "name": "tonttu-peli",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "dev": "parcel ./src/index.html -d build/",
+    "start-dev": "ELECTRON_START_URL=http://localhost:1234 electron .",
+    "start": "electron .",
+    "build": "parcel build ./src/index.html -d build/ --public-url ./",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder -w",
+    "postinstall": "electron-builder install-app-deps"
+  },
+  "build": {
+    "appId": "tonttu-peli",
+    "win": {
+      "target": [
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "files": [
+      "main.js",
+      "build/*"
+    ]
+  },
+  "keywords": [
+    "parcel"
+  ],
+  "contributors": [],
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "babel-preset-env": "^1.6.1",
+    "electron": "~1.7.8",
+    "electron-builder": "^19.50.0",
+    "electron-reload": "^1.2.2",
+    "parcel-bundler": "^1.3.1"
+  },
+  "babel": {
+    "presets": [
+      "env"
+    ]
+  }
+}
