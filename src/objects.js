@@ -4,9 +4,6 @@ export class GameObject {
   constructor({ startingPosition = [0, 0], size = 4 }) {
     this.size = size;
     this.startingPosition = startingPosition;
-    this.position = startingPosition;
-    this.queuedPosition = startingPosition;
-    this.lastMove = 0;
   }
 
   draw(ctx) {
@@ -22,11 +19,11 @@ export class GameObject {
   }
 
   getPosition() {
-    return this.position;
+    return this.position || this.startingPosition;
   }
 
   getQueuedPosition() {
-    return this.queuedPosition;
+    return this.queuedPosition || this.position;
   }
 
   queuePosition(position) {
