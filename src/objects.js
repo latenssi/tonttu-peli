@@ -1,31 +1,78 @@
+const possibleDirections = [-1, 0, 1, 1];
+
 export class GameObject {
-  constructor(color, size = 50, speed = 50) {
-    this.color = color;
+  constructor({ startingPosition = [0, 0], size = 4 }) {
     this.size = size;
-    this.speed = speed;
-    this.position = [0, 0];
+    this.startingPosition = startingPosition;
+    this.position = startingPosition;
+    this.queuedPosition = startingPosition;
+    this.lastMove = 0;
   }
 
   draw(ctx) {
-    ctx.fillStyle = this.color;
-    ctx.fillRect(this.position[0], this.position[1], this.size, this.size);
+    const position = this.getPosition();
+    const size = this.getSize();
+
+    ctx.fillStyle = "rgb(0,0,0)";
+    ctx.fillRect(position[0], position[1], size, size);
+  }
+
+  getSize() {
+    return this.size;
+  }
+
+  getPosition() {
+    return this.position;
+  }
+
+  getQueuedPosition() {
+    return this.queuedPosition;
+  }
+
+  queuePosition(position) {
+    this.queuedPosition = position;
+  }
+
+  move() {
+    this.position = this.getQueuedPosition();
   }
 
   moveRandom(width, height) {
-    this.position = this.position.map(
-      p => p + (Math.random() > 0.5 ? 1 : -1) * this.speed
+    const currentPosition = this.getPosition();
+    const size = this.getSize();
+
+    const newPosition = currentPosition.map(
+      p => p + possibleDirections[Math.floor(Math.random() * 3)] * size
     );
 
-    if (this.position[0] > width) {
-      this.position[0] = width;
-    } else if (this.position[0] < 0) {
-      this.position[0] = 0;
+    if (newPosition[0] < 0 || newPosition[0] > width) {
+      newPosition[0] = currentPosition[0];
     }
 
-    if (this.position[1] > height) {
-      this.position[1] = height;
-    } else if (this.position[1] < 0) {
-      this.position[1] = 0;
+    if (newPosition[1] < 0 || newPosition[1] > height) {
+      newPosition[1] = currentPosition[1];
     }
+
+    this.queuePosition(newPosition);
+  }
+}
+
+export class ColoredGameObject extends GameObject {
+  constructor(props) {
+    super(props);
+    this.color = props.color;
+  }
+
+  draw(ctx) {
+    const color = this.getColor();
+    const position = this.getPosition();
+    const size = this.getSize();
+
+    ctx.fillStyle = color;
+    ctx.fillRect(position[0], position[1], size, size);
+  }
+
+  getColor() {
+    return this.color;
   }
 }
