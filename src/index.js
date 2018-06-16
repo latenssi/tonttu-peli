@@ -1,5 +1,5 @@
 import "./index.css";
-import { GameObject, ColoredGameObject } from "./objects";
+import { FallingRectangle } from "./objects";
 
 let width;
 let height;
@@ -7,7 +7,7 @@ let height;
 const rootEl = document.querySelector("#root");
 const canvas = document.createElement("canvas");
 const ctx = canvas.getContext("2d");
-const physicsFPS = 25;
+const physicsFPS = 60;
 const objects = [];
 
 rootEl.appendChild(canvas);
@@ -30,33 +30,38 @@ function onResize() {
 }
 
 function setup() {
-  const size = 4;
-  const numOfObjects = 1000;
+  const size = 40;
+  const numOfObjects = 1;
 
-  const startingPosition = [
-    Math.floor(Math.floor(width / size) / 2) * size,
-    Math.floor(Math.floor(height / size) / 2) * size
-  ];
+  // const initialPosition = [
+  //   Math.floor(Math.floor(width / size) / 2) * size,
+  //   Math.floor(Math.floor(height / size) / 2) * size
+  // ];
+
+  const initialPosition = [Math.floor(Math.floor(width / size) / 2) * size, 0];
 
   for (let i = 0; i < numOfObjects; i++) {
     objects.push(
-      new ColoredGameObject({
+      new FallingRectangle({
         color: `rgb(${Math.random() * 256}, ${Math.random() *
           256}, ${Math.random() * 256})`,
-        startingPosition,
-        size
+        initialPosition,
+        size,
+        speed: [1, 0]
       })
     );
   }
 }
 
 function physicsTick() {
-  objects.forEach(o => o.moveRandom(width, height));
+  objects.forEach(o =>
+    o.calculateMovement({ canvasWidth: width, canvasHeight: height })
+  );
   objects.forEach(o => o.move());
 }
 
 function draw() {
-  // ctx.clearRect(0, 0, width, height);
+  ctx.clearRect(0, 0, width, height);
 
   objects.forEach(o => o.draw(ctx));
 

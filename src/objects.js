@@ -1,63 +1,107 @@
-const possibleDirections = [-1, 0, 1, 1];
+const possibleDirections = [-1, 0, 1];
 
 export class GameObject {
-  constructor({ startingPosition = [0, 0], size = 4 }) {
-    this.size = size;
-    this.startingPosition = startingPosition;
-  }
-
-  draw(ctx) {
-    const position = this.getPosition();
-    const size = this.getSize();
-
-    ctx.fillStyle = "rgb(0,0,0)";
-    ctx.fillRect(position[0], position[1], size, size);
-  }
-
-  getSize() {
-    return this.size;
+  constructor(props) {
+    this.initialPosition = props.initialPosition || [0, 0];
   }
 
   getPosition() {
-    return this.position || this.startingPosition;
-  }
-
-  getQueuedPosition() {
-    return this.queuedPosition || this.position;
-  }
-
-  queuePosition(position) {
-    this.queuedPosition = position;
-  }
-
-  move() {
-    this.position = this.getQueuedPosition();
-  }
-
-  moveRandom(width, height) {
-    const currentPosition = this.getPosition();
-    const size = this.getSize();
-
-    const newPosition = currentPosition.map(
-      p => p + possibleDirections[Math.floor(Math.random() * 3)] * size
-    );
-
-    if (newPosition[0] < 0 || newPosition[0] > width) {
-      newPosition[0] = currentPosition[0];
-    }
-
-    if (newPosition[1] < 0 || newPosition[1] > height) {
-      newPosition[1] = currentPosition[1];
-    }
-
-    this.queuePosition(newPosition);
+    return this.initialPosition;
   }
 }
 
-export class ColoredGameObject extends GameObject {
+export const MoveableGameObject = ParentClass =>
+  class extends ParentClass {
+    constructor(props) {
+      super(props);
+      this.speed = props.speed || [0, 0];
+    }
+
+    getPosition() {
+      return this.position || this.initialPosition;
+    }
+
+    setPosition(position) {
+      this.position = position;
+    }
+
+    getSpeed() {
+      return this.speed;
+    }
+
+    setSpeed(speed) {
+      this.speed = speed;
+    }
+
+    move() {
+      const currentPosition = this.getPosition();
+      const currentSpeed = this.getSpeed();
+      const newPosition = currentPosition.map((p, i) => p + currentSpeed[i]);
+      this.setPosition(newPosition);
+    }
+
+    calculateMovement() {}
+  };
+
+// export class MoveableGameObject extends GameObject {
+//   constructor(props) {
+//     super(props);
+//     this.speed = props.speed || [0, 0];
+//   }
+
+//   getPosition() {
+//     return this.position || this.initialPosition;
+//   }
+
+//   setPosition(position) {
+//     this.position = position;
+//   }
+
+//   getSpeed() {
+//     return this.speed;
+//   }
+
+//   setSpeed(speed) {
+//     this.speed = speed;
+//   }
+
+//   move() {
+//     const currentPosition = this.getPosition();
+//     const currentSpeed = this.getSpeed();
+//     const newPosition = currentPosition.map((p, i) => p + currentSpeed[i]);
+//     this.setPosition(newPosition);
+//   }
+
+//   calculateMovement() {}
+// }
+
+export class GravityGameObject extends MoveableGameObject(GameObject) {
+  constructor(props) {
+    super(props);
+    this.gravity = props.gravity || [0, 1];
+  }
+
+  getGravity() {
+    return this.gravity;
+  }
+
+  calculateGravitySpeed() {
+    const [gravX, gravY] = this.getGravity();
+    const [speedX, speedY] = this.getSpeed();
+    return [speedX + gravX, speedY + gravY];
+  }
+
+  calculateMovement() {
+    const newSpeed = this.calculateGravitySpeed();
+    this.setSpeed(newSpeed);
+  }
+}
+
+export class FallingRectangle extends GravityGameObject {
   constructor(props) {
     super(props);
     this.color = props.color;
+    this.size = props.size;
   }
 
   draw(ctx) {
@@ -69,7 +113,13 @@ export class ColoredGameObject extends GameObject {
     ctx.fillRect(position[0], position[1], size, size);
   }
 
+  getSize() {
+    return this.size;
+  }
+
   getColor() {
     return this.color;
   }
 }
+
+export class JumpingRectangle extends FallingRectangle {}
