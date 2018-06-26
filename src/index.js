@@ -1,5 +1,6 @@
 import "./index.css";
 import { FallingRectangle } from "./objects";
+import GameObject from "./gameObject";
 
 let width;
 let height;
@@ -9,6 +10,7 @@ const canvas = document.createElement("canvas");
 const ctx = canvas.getContext("2d");
 const physicsFPS = 60;
 const objects = [];
+const newObjects = [];
 
 rootEl.appendChild(canvas);
 
@@ -30,6 +32,9 @@ function onResize() {
 }
 
 function setup() {
+  const go1 = new GameObject();
+  go1.test();
+
   const size = 40;
   const numOfObjects = 1;
 
@@ -41,6 +46,8 @@ function setup() {
   const initialPosition = [Math.floor(Math.floor(width / size) / 2) * size, 0];
 
   for (let i = 0; i < numOfObjects; i++) {
+    newObjects.push(new GameObject());
+
     objects.push(
       new FallingRectangle({
         color: `rgb(${Math.random() * 256}, ${Math.random() *
@@ -58,6 +65,7 @@ function physicsTick() {
     o.calculateMovement({ canvasWidth: width, canvasHeight: height })
   );
   objects.forEach(o => o.move());
+  // newObjects.forEach(o => o.run({ canvasWidth: width, canvasHeight: height }));
 }
 
 function draw() {

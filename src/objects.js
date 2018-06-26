@@ -43,7 +43,7 @@ export const MoveableGameObject = ParentClass =>
     calculateMovement() {}
   };
 
-export const GravityGameObject = ParentClass => class extends ParentClass {}
+// export const GravityGameObject = ParentClass => class extends ParentClass {}
 // export class MoveableGameObject extends GameObject {
 //   constructor(props) {
 //     super(props);
